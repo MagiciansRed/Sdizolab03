@@ -205,7 +205,7 @@ void BinarySearchTree::generateNodes(int amount)
 	int count = 0;
 	while (amount>count)
 	{
-		int num = (-100 + (rand() % (int)(100 + 100 + 1)));
+		int num = (-10000 + (rand() % (int)(10000 + 10000 + 1)));
 		if (addNode(num))
 		{
 			count++;
@@ -323,36 +323,51 @@ bool BinarySearchTree::addNode(int key)
 
 int main()
 {
+#pragma warning(disable:4996);
+	int X, k1, k2, k3, k4;
+	FILE* fp = fopen("inlab03.txt", "r");
+	if (fp == NULL)
+		return -1;
+	fscanf(fp, "%d %d %d %d %d ", &X, &k1, &k2, &k3, &k4);
+	fclose(fp);
+
+	clock_t begin, end;
+	double time_spent;
+	begin = clock();
+
 	std::srand(std::time(NULL));
 	BinarySearchTree bst;
-	bst.addNode(200);
-	bst.addNode(150);
-	bst.addNode(400);
-	bst.addNode(100);
-	bst.addNode(90);
-	bst.addNode(50);
-	bst.addNode(175);
-	bst.addNode(170);
-	bst.addNode(190);
-	bst.addNode(125);
-	bst.addNode(130);
-	bst.addNode(127);
-	
+	bst.deleteNode(k1);
+	bst.addNode(k1);
+	bst.generateNodes(X);
+	std::cout << "InOrder: ";
 	bst.inOrder(bst.root);
-	std::cout << "\n";
-	bst.postOrder(bst.root);
-	std::cout << "\n";
+	std::cout << std::endl;
+	std::cout << "PreOrder: ";
 	bst.preOrder(bst.root);
+	std::cout << std::endl;
+	bst.addNode(k2);
+	std::cout << "InOrder: ";
+	bst.inOrder(bst.root);
+	std::cout << std::endl;
+	bst.addNode(k3);
+	bst.addNode(k4);
+	bst.deleteNode(k1);
+	std::cout << "PreOrder: ";
+	bst.preOrder(bst.root);
+	std::cout << std::endl;
+	bst.findNode(k1);
+	bst.deleteNode(k2);
+	std::cout << "InOrder: ";
+	bst.inOrder(bst.root);
+	std::cout << std::endl;
+	bst.deleteNode(k3);
+	bst.deleteNode(k4);
 
-	bst.deleteNode(175);
-	std::cout << "\n";
-	std::cout << "\n";
-	
-	bst.inOrder(bst.root);
-	std::cout << "\n";
-	bst.postOrder(bst.root);
-	std::cout << "\n";
-	bst.preOrder(bst.root);
+	end = clock();
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	std::cout << "\n" << "Time: " << time_spent << std::endl;
+
 
 	getchar();
 
