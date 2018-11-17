@@ -1,0 +1,361 @@
+// ConsoleApplication11.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+#include <ctime>
+#include <time.h>
+#include <string>
+
+struct Node
+{
+	int key;
+	Node* right;
+	Node* left;
+	char tab[10];
+};
+
+class BinarySearchTree
+{
+private:
+
+public:
+	Node * root;
+	int numberOfNodes;
+	BinarySearchTree() { root = nullptr; numberOfNodes = 0; }
+	bool addNode(int key);
+	void generateNodes(int amount);
+	Node* findMin();
+	Node* findMax();
+	Node* searchTree(int key);
+	void findNode(int key);
+	void deleteNode(int key);
+	void inOrder(Node* root);
+	void preOrder(Node* root);
+	void postOrder(Node* root);
+
+
+};
+
+void BinarySearchTree::deleteNode(int x)
+{
+	Node* parent = nullptr;
+	Node* p;
+	p = root;
+	while ((p != nullptr) && (x != p->key)) // loop as long as p.key doesn't match x value and p doesn't equal NULL
+	{
+		parent = p; // addicional pointer to keep track of the node one above p
+		if (p->key < x)
+			p = p->right;
+		else
+			p = p->left;
+	}
+	if (p == nullptr) // x_value was not found in the tree
+	{
+		std::cout << "There is no node with value " << std::to_string(x) << std::endl;
+		return;
+	}
+
+	if ((p->right == nullptr) && (p->left == nullptr)) // leaf case;
+	{
+		if (p == root) // case where root was the only node in the structure
+		{
+			root = nullptr;
+			return;
+		}
+		if (parent->right == p) // using parent pointer to determine position(left/right) of the node p
+			parent->right = nullptr;
+		else
+			parent->left = nullptr;
+		return;
+	}
+	if (p->right == nullptr) // case where p has only one child node(left)
+	{
+		if (p == root)
+		{
+			root = p->left;
+		}
+		else if (parent->right == p)
+		{
+			parent->right = p->left;
+		}
+		else
+		{
+			parent->left = p->left;
+		}
+		p->right = nullptr;
+		p->left = nullptr;
+		delete p;
+		return;
+
+	}
+	if (p->left == nullptr) // case where p has only one child node(right)
+	{
+		if (p == root)
+		{
+			root = p->right;
+		}
+		else if (parent->right == p)
+		{
+			parent->right = p->right;
+		}
+		else
+		{
+			parent->left = p->right;
+		}
+		p->right = nullptr;
+		p->left = nullptr;
+		delete p;
+		return;
+	}
+	Node* preparent = nullptr;
+	Node* child = nullptr;
+	preparent = p;
+	child = p->left;
+	while (child->right != nullptr)
+	{
+		preparent = child;
+		child = child->right;
+	}
+	if (child == p->left)
+	{
+		if (p == root)
+		{
+			root = p->left;
+			child->right = p->right;
+		}
+		else if (parent->right == p)
+		{
+			parent->right = child;
+			child->right = p->right;
+		}
+		else
+		{
+			parent->left = child;
+			child->right = p->right;
+		}
+		p->right = nullptr;
+		p->left = nullptr;
+		delete p;
+		return;
+	}
+	Node* grandchild = nullptr;
+	grandchild = child->left;
+	if (preparent->right == child)
+	{
+		preparent->right = grandchild;
+	}
+	else
+	{
+		preparent->left = grandchild;
+	}
+	child->left = p->left;
+	child->right = p->right;
+	if (p == root)
+	{
+		root = child;
+	}
+	else if (parent->right == p)
+	{
+		parent->right = child;
+	}else
+	{
+		parent->left = child;
+	}
+	p->right = nullptr;
+	p->left = nullptr;
+	delete p;
+	return;
+
+}
+
+
+void BinarySearchTree::inOrder(Node* root)
+{
+	if (root == nullptr)
+		return;
+	inOrder(root->left);
+	std::cout << root->key << " ";
+	inOrder(root->right);
+}
+
+
+void BinarySearchTree::postOrder(Node* root)
+{
+	if (root == nullptr)
+		return;
+	postOrder(root->left);
+	postOrder(root->right);
+	std::cout << root->key << " ";
+}
+
+
+void BinarySearchTree::preOrder(Node* root)
+{
+	if (root == nullptr)
+		return;
+	std::cout << root->key << " ";
+	preOrder(root->left);
+	preOrder(root->right);
+}
+
+
+void BinarySearchTree::generateNodes(int amount)
+{
+	int count = 0;
+	while (amount>count)
+	{
+		int num = (-100 + (rand() % (int)(100 + 100 + 1)));
+		if (addNode(num))
+		{
+			count++;
+		}
+	}
+}
+
+
+void BinarySearchTree::findNode(int key)
+{
+	if (searchTree(key) != nullptr)
+	{
+		std::cout << "Node found." << std::endl;
+	}
+	else
+	{
+		std::cout << "Node not found." << std::endl;
+	}
+}
+
+struct Node* BinarySearchTree::searchTree(int key)
+{
+	Node* tempNode = nullptr;
+	tempNode = root;
+	while (tempNode != nullptr && tempNode->key != key)
+	{
+		if (key > tempNode->key)
+		{
+			tempNode = tempNode->right;
+		}
+		else
+		{
+			tempNode = tempNode->left;
+		}
+	}
+	return tempNode;
+}
+
+
+Node* BinarySearchTree::findMax()
+{
+	Node* tempNode = nullptr;
+	Node* currentNode = nullptr;
+	tempNode = root;
+	while (tempNode != nullptr)
+	{
+		currentNode = tempNode;
+		tempNode = tempNode->right;
+	}
+	return currentNode;
+}
+
+
+Node* BinarySearchTree::findMin()
+{
+	Node* tempNode = nullptr;
+	Node* currentNode = nullptr;
+	tempNode = root;
+	while (tempNode != nullptr)
+	{
+		currentNode = tempNode;
+		tempNode = tempNode->left;
+	}
+	return currentNode;
+}
+
+
+bool BinarySearchTree::addNode(int key)
+{
+	Node* parent = nullptr;
+	Node* tempNode = nullptr;
+	Node* newNode;
+	newNode = new Node;
+	newNode->left = nullptr;
+	newNode->right = nullptr;
+	newNode->key = key;
+
+
+	if (root == nullptr)
+	{
+		root = newNode;
+	}
+	else
+	{
+		tempNode = root;
+		while (tempNode != nullptr)
+		{
+			if (tempNode->key == key) {
+				delete newNode;
+				return false;
+			}
+			parent = tempNode;
+			if (newNode->key > tempNode->key)
+			{
+				tempNode = tempNode->right;
+			}
+			else
+			{
+				tempNode = tempNode->left;
+			}
+		}
+		if (parent->key > newNode->key)
+		{
+			parent->left = newNode;
+		}
+		else
+		{
+			parent->right = newNode;
+		}
+	}
+	numberOfNodes++;
+	return true;
+}
+
+
+int main()
+{
+	std::srand(std::time(NULL));
+	BinarySearchTree bst;
+	bst.addNode(200);
+	bst.addNode(150);
+	bst.addNode(400);
+	bst.addNode(100);
+	bst.addNode(90);
+	bst.addNode(50);
+	bst.addNode(175);
+	bst.addNode(170);
+	bst.addNode(190);
+	bst.addNode(125);
+	bst.addNode(130);
+	bst.addNode(127);
+	
+	bst.inOrder(bst.root);
+	std::cout << "\n";
+	bst.postOrder(bst.root);
+	std::cout << "\n";
+	bst.preOrder(bst.root);
+
+	bst.deleteNode(175);
+	std::cout << "\n";
+	std::cout << "\n";
+	
+	bst.inOrder(bst.root);
+	std::cout << "\n";
+	bst.postOrder(bst.root);
+	std::cout << "\n";
+	bst.preOrder(bst.root);
+
+	getchar();
+
+	return 0;
+}
+
